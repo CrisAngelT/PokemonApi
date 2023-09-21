@@ -1,6 +1,6 @@
 package com.example.pokemonapi.data.model.response
 
-import com.example.pokemonapi.data.model.bean.ListPokemonBean
+import com.example.pokemonapi.domain.bean.ListPokemonBean
 import com.google.gson.annotations.SerializedName
 
 data class ListPokemonResponse(

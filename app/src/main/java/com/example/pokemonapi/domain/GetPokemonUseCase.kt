@@ -1,10 +1,10 @@
 package com.example.pokemonapi.domain
 
-import com.example.pokemon.data.ListPokemonRepository
-import com.example.pokemonapi.data.model.bean.ListPokemonBean
+import com.example.pokemonapi.data.ListPokemonRepository
+import com.example.pokemonapi.domain.bean.ListPokemonBean
+import javax.inject.Inject
 
-class GetPokemonUseCase {
-    private val repository = ListPokemonRepository()
+class GetPokemonUseCase @Inject constructor(private val repository: ListPokemonRepository) {
 
     suspend operator fun invoke(): ListPokemonBean? = repository.getListPokemonRepository()
 

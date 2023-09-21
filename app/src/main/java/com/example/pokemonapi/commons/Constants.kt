@@ -1,4 +1,4 @@
-package com.example.pokemon.commons
+package com.example.pokemonapi.commons
 
 class Constants {
     companion object  {

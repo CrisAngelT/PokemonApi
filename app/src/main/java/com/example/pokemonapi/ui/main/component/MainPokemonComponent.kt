@@ -1,31 +1,26 @@
 package com.example.pokemonapi.ui.main.component
 
-import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.pokemonapi.R
-import com.example.pokemonapi.data.model.bean.ResultPokemonBean
+import com.example.pokemonapi.domain.bean.ResultPokemonBean
 
 @Composable
 fun MainPokemonComponent(listPokemon: List<ResultPokemonBean>, navController: NavController) {
@@ -48,49 +43,38 @@ fun MainPokemonComponent(listPokemon: List<ResultPokemonBean>, navController: Na
 }
 
 @Composable
-fun RecyclerViewList(listPokemon: List<ResultPokemonBean>,navController: NavController) {
-    LazyColumn(
-        contentPadding =
-        PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ) {
+fun RecyclerViewList(listPokemon: List<ResultPokemonBean>, navController: NavController) {
 
-        Log.e("pokemon",listPokemon.size.toString())
+    LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
         items(listPokemon) { pokemones ->
-            ItemPokemon(pokemones,navController)
+            ItemPokemon(pokemones, navController)
         }
     }
+    )
+
 }
 
 
-
 @Composable
-private fun ItemPokemon(user: ResultPokemonBean,navController: NavController) {
+private fun ItemPokemon(user: ResultPokemonBean, navController: NavController) {
     Card(
         shape = RoundedCornerShape(14.dp),
         backgroundColor = Color.White,
+
         modifier = Modifier
             .padding(10.dp)
-            .width(180.dp)
+            .width(180.dp),
+        elevation = 5.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(user.url)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "gaa",
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape),
-                placeholder = painterResource(R.drawable.bolbasor),
-                error = painterResource(R.drawable.bolbasor)
-
-                ,
-
+            Image(
+                painter = painterResource(id = R.drawable.logopokebola),
+                contentDescription = null,
+                modifier = Modifier.size(140.dp)
             )
 
             Row(modifier = Modifier.padding(top = 20.dp)) {
@@ -98,26 +82,22 @@ private fun ItemPokemon(user: ResultPokemonBean,navController: NavController) {
                     Text(
                         text = user.name,
                         style = TextStyle(
-                            color = Color.Gray,
+                            color = Color.Black,
                             fontSize = 16.sp
-                        )
+                        ),
+                        modifier = Modifier.padding(start = 15.dp)
                     )
-                    Text(
-                        text = "S/ 150.23",
-                        style = TextStyle(
-                            color = Color.Red,
-                            fontSize = 16.sp
-                        )
-                    )
+
                 }
                 IconButton(
                     onClick = { },
                     modifier = Modifier.background(
-                        color = colorResource(id = R.color.color_linear),
+                        color = Color.Red,
                         shape = RoundedCornerShape(10.dp)
                     )
+                        .size(40.dp)
                 ) {
-                    Icon(Icons.Default.Add, tint = Color.White,  contentDescription = null)
+                    Icon(Icons.Default.Add, tint = Color.White, contentDescription = null)
                 }
             }
         }

@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pokemonapi.ui.main.component.MainPokemonComponent
 import com.example.pokemonapi.ui.splash.ScaffoldSplashScreen
-import com.example.pokemonapi.data.model.bean.ResultPokemonBean
+import com.example.pokemonapi.domain.bean.ResultPokemonBean
 import com.example.pokemonapi.ui.login.LoginPage
 
 

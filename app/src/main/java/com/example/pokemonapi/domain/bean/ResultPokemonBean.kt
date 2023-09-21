@@ -1,4 +1,4 @@
-package com.example.pokemonapi.data.model.bean
+package com.example.pokemonapi.domain.bean
 
 data class ResultPokemonBean(
     val name: String,

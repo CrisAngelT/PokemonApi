@@ -1,6 +1,6 @@
 package com.example.pokemonapi.commons.navigation
 
-import com.example.pokemon.commons.Constants
+import com.example.pokemonapi.commons.Constants
 
 sealed class AppScreen(val route:String)
 {

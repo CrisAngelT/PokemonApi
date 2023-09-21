@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40193815993",
+    "project_id": "pokemonapi-cc1bc",
+    "storage_bucket": "pokemonapi-cc1bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40193815993:android:0b46b74f5ba04ca5d8f268",
+        "android_client_info": {
+          "package_name": "com.example.pokemonapi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7xAxBXPZeS8SG_ZWVshlyW1UtoSnHaug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

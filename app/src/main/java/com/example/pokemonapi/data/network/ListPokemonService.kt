@@ -1,20 +1,19 @@
 package com.example.pokemonapi.data.network
 
-import com.example.pokemon.core.RetrofitHelper
 import com.example.pokemonapi.data.model.response.ListPokemonResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ListPokemonService {
-
-    private val retrofit = RetrofitHelper.getRetrofit()
+class ListPokemonService @Inject constructor(private val api:ListPokemonAPi) {
 
     suspend fun  getPokemonService(): ListPokemonResponse?
     {
         return withContext(Dispatchers.IO)
         {
-            val response = retrofit.create(ListPokemonAPi::class.java).getListPokemonApi()
+            val response = api.getListPokemonApi()
             response.body()
         }
     }
+
 }

@@ -5,20 +5,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokemonapi.data.model.bean.ResultPokemonBean
+import com.example.pokemonapi.domain.bean.ResultPokemonBean
 import com.example.pokemonapi.domain.GetPokemonUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel:ViewModel() {
-    val _mutablePokemonResponse = MutableLiveData<List<ResultPokemonBean>>()
+@HiltViewModel
+class MainViewModel @Inject constructor(private val getPokemonUseCase: GetPokemonUseCase) :ViewModel() {
+    private val _mutablePokemonResponse = MutableLiveData<List<ResultPokemonBean>>()
     val mutablePokemonResponse :LiveData<List<ResultPokemonBean>> = _mutablePokemonResponse
-    var getPokemonCaseUse = GetPokemonUseCase()
 
     @SuppressLint("SuspiciousIndentation")
     fun onCreate()
     {
         viewModelScope.launch {
-            val result = getPokemonCaseUse()
+            val result = getPokemonUseCase.invoke()
                 if (result != null)
                 {
                     _mutablePokemonResponse.value = result.results

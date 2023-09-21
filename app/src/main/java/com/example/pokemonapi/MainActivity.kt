@@ -12,9 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokemonapi.ui.main.MainViewModel
 import com.example.pokemonapi.commons.navigation.AppNavigation
-import com.example.pokemonapi.data.model.bean.ResultPokemonBean
+import com.example.pokemonapi.domain.bean.ResultPokemonBean
 import com.example.pokemonapi.ui.theme.PokemonApiTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var listPokemon:List<ResultPokemonBean>
     override fun onCreate(savedInstanceState: Bundle?) {

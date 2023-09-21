@@ -1,11 +1,11 @@
-package com.example.pokemon.data
+package com.example.pokemonapi.data
 
-import com.example.pokemonapi.data.model.bean.ListPokemonBean
+import com.example.pokemonapi.domain.bean.ListPokemonBean
 import com.example.pokemonapi.data.network.ListPokemonService
+import javax.inject.Inject
 
-class ListPokemonRepository {
+class ListPokemonRepository @Inject constructor(private val api:ListPokemonService){
 
-    private val api = ListPokemonService()
 
     suspend fun getListPokemonRepository(): ListPokemonBean?
     {
