@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PokemonApi</string>
+    <string name="txt_hop">Saltar</string>
+</resources>
