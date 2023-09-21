@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pokemonapi.R
+import com.example.pokemonapi.commons.Resource
+import com.example.pokemonapi.domain.bean.ListPokemonBean
 import com.example.pokemonapi.domain.bean.ResultPokemonBean
 
 @Composable
-fun MainPokemonComponent(listPokemon: List<ResultPokemonBean>, navController: NavController) {
+fun MainPokemonComponent(pokemonBean: ListPokemonBean?, navController: NavController) {
     Column {
         Text(
             modifier = Modifier
@@ -34,6 +36,7 @@ fun MainPokemonComponent(listPokemon: List<ResultPokemonBean>, navController: Na
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
+        val listPokemon = pokemonBean?.results?: listOf()
         if (listPokemon.isNotEmpty()) {
             RecyclerViewList(listPokemon = listPokemon, navController)
         } else {
@@ -91,10 +94,11 @@ private fun ItemPokemon(user: ResultPokemonBean, navController: NavController) {
                 }
                 IconButton(
                     onClick = { },
-                    modifier = Modifier.background(
-                        color = Color.Red,
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                         .size(40.dp)
                 ) {
                     Icon(Icons.Default.Add, tint = Color.White, contentDescription = null)

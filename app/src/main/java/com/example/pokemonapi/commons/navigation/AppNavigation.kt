@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pokemonapi.commons.Resource
+import com.example.pokemonapi.domain.bean.ListPokemonBean
 import com.example.pokemonapi.ui.main.component.MainPokemonComponent
 import com.example.pokemonapi.ui.splash.ScaffoldSplashScreen
 import com.example.pokemonapi.domain.bean.ResultPokemonBean
@@ -11,7 +13,7 @@ import com.example.pokemonapi.ui.login.LoginPage
 
 
 @Composable
-fun AppNavigation(listPokemon:List<ResultPokemonBean>) {
+fun AppNavigation(pokemonBean: ListPokemonBean?) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = AppScreen.SplashScreen.route)
     {
@@ -25,7 +27,7 @@ fun AppNavigation(listPokemon:List<ResultPokemonBean>) {
         }
         composable(route = AppScreen.MainScreen.route)
         {
-            MainPokemonComponent(listPokemon,navController)
+            MainPokemonComponent(pokemonBean,navController)
         }
     }
 }

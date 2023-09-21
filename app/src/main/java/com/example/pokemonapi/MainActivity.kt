@@ -23,7 +23,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PokemonApiTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     listPokemon = listOf()
                     val pokemonViewModel: MainViewModel = viewModel()
                     pokemonViewModel.onCreate()
-                    val listPokemon by pokemonViewModel.mutablePokemonResponse.observeAsState(initial = listOf())
+                    val listPokemon by pokemonViewModel.mutablePokemonResponse.observeAsState(initial = null)
                     AppNavigation(listPokemon)
                 }
             }

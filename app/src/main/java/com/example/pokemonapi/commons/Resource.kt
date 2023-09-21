@@ -1,4 +1,4 @@
-package com.example.pokemon.commons
+package com.example.pokemonapi.commons
 
 sealed class Resource<T>(
     val data: T? = null,
