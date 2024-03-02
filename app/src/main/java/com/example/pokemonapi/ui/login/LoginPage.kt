@@ -49,7 +49,6 @@ import com.example.pokemonapi.commons.utilcomponent.SetStatusBarColor
 fun LoginPage(navController: NavController) {
     SetStatusBarColor(color = Color.White)
     val hop = stringResource(id = R.string.txt_hop)
-    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -152,7 +151,7 @@ fun LoginPage(navController: NavController) {
 
 //...........................................................................
 @Composable
-private fun GradientButton(
+ fun GradientButton(
     gradientColors: List<Color>,
     cornerRadius: Dp,
     nameButton: String,

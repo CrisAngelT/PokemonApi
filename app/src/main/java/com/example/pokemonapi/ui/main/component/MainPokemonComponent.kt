@@ -6,42 +6,73 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pokemonapi.R
+import com.example.pokemonapi.commons.Constants.Companion.DETAIL_POKEMON_OBJECT
 import com.example.pokemonapi.commons.Resource
-import com.example.pokemonapi.domain.bean.ListPokemonBean
+import com.example.pokemonapi.commons.gson.BeanMapper
+import com.example.pokemonapi.commons.lottie.LottieLogoLogin
+import com.example.pokemonapi.commons.navigation.AppScreen
+import com.example.pokemonapi.commons.preference.Preference
+import com.example.pokemonapi.domain.bean.Pokemon
 import com.example.pokemonapi.domain.bean.ResultPokemonBean
+import com.example.pokemonapi.ui.main.MainViewModel
+import timber.log.Timber
 
 @Composable
-fun MainPokemonComponent(pokemonBean: ListPokemonBean?, navController: NavController) {
-    Column {
+fun MainPokemonComponent(mainMapViewModel: MainViewModel, navController: NavController) {
+    val listPokemon by mainMapViewModel.mutablePokemonResponse.observeAsState(initial = null)
+
+    LaunchedEffect(key1 = true)
+    {
+        mainMapViewModel.onCreate()
+    }
+    Column(modifier = Modifier.background(Color.White)) {
         Text(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth(),
             text = "Lista de Pokemones",
-            style = MaterialTheme.typography.h6,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.h5,
+            textAlign = TextAlign.Center,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        val listPokemon = pokemonBean?.results?: listOf()
-        if (listPokemon.isNotEmpty()) {
-            RecyclerViewList(listPokemon = listPokemon, navController)
-        } else {
-            Text("Cargando pokemones...")
+
+        when (listPokemon) {
+            is Resource.Loading -> {
+                LottieLogoLogin()
+            }
+            is Resource.Success -> {
+                val list = listPokemon?.data?.results ?: listOf()
+                if (list.isNotEmpty()) {
+                    RecyclerViewList(listPokemon = list, navController)
+                } else {
+                    Text("Cargando pokemones...")
+                }
+            }
+            else -> {}
         }
+
     }
 }
 
@@ -49,9 +80,12 @@ fun MainPokemonComponent(pokemonBean: ListPokemonBean?, navController: NavContro
 fun RecyclerViewList(listPokemon: List<ResultPokemonBean>, navController: NavController) {
 
     LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
-        items(listPokemon) { pokemones ->
-            ItemPokemon(pokemones, navController)
+        itemsIndexed(listPokemon)
+        { count, pokemones ->
+            ItemPokemon(count, pokemones, navController)
+
         }
+
     }
     )
 
@@ -59,7 +93,8 @@ fun RecyclerViewList(listPokemon: List<ResultPokemonBean>, navController: NavCon
 
 
 @Composable
-private fun ItemPokemon(user: ResultPokemonBean, navController: NavController) {
+private fun ItemPokemon(index: Int, user: ResultPokemonBean, navController: NavController) {
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(14.dp),
         backgroundColor = Color.White,
@@ -67,7 +102,7 @@ private fun ItemPokemon(user: ResultPokemonBean, navController: NavController) {
         modifier = Modifier
             .padding(10.dp)
             .width(180.dp),
-        elevation = 5.dp
+        elevation = 10.dp
     ) {
         Column(
             modifier = Modifier
@@ -93,7 +128,11 @@ private fun ItemPokemon(user: ResultPokemonBean, navController: NavController) {
 
                 }
                 IconButton(
-                    onClick = { },
+                    onClick = {
+                        Timber.e("INDEXXXX ->$index")
+                        Preference.fnWrite(context, DETAIL_POKEMON_OBJECT, index.toString())
+                        navController.navigate(AppScreen.DetailScreen.route)
+                    },
                     modifier = Modifier
                         .background(
                             color = Color.Red,

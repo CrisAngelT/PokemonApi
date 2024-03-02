@@ -13,12 +13,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokemonapi.ui.main.MainViewModel
 import com.example.pokemonapi.commons.navigation.AppNavigation
 import com.example.pokemonapi.domain.bean.ResultPokemonBean
+import com.example.pokemonapi.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pokemonapi.ui.theme.PokemonApiTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var listPokemon:List<ResultPokemonBean>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,11 +27,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    listPokemon = listOf()
                     val pokemonViewModel: MainViewModel = viewModel()
-                    pokemonViewModel.onCreate()
-                    val listPokemon by pokemonViewModel.mutablePokemonResponse.observeAsState(initial = null)
-                    AppNavigation(listPokemon)
+                    val detailViewModel:DetailPokemonViewModel = viewModel()
+                    AppNavigation(pokemonViewModel,detailViewModel)
                 }
             }
         }

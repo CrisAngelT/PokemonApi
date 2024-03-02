@@ -1,7 +1,7 @@
 package com.example.pokemonapi.data.network
 
 import com.example.pokemonapi.data.model.response.ListPokemonResponse
-import com.example.pokemonapi.data.model.response.PokemonResponse
+import com.example.pokemonapi.data.model.response.Pokemon
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,4 +12,6 @@ interface ListPokemonAPi {
     @GET("pokemon")
     suspend fun getListPokemonApi(): Response<ListPokemonResponse>
 
+    @GET("pokemon/{id}")
+    suspend fun listInfoPokemon(@Path("id") id: Int): Response<Pokemon>
 }
