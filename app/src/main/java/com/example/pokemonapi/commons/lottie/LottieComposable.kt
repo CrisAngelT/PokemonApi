@@ -8,25 +8,31 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.example.pokemonapi.R
 
-
+@Preview(showBackground = true)
 @Composable
 fun LottieLogoLogin() {
     Column(
-        modifier = Modifier.width(350.dp).height(300.dp)
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_lottie_pokemon))
-        LottieAnimation(composition = composition,  iterations = LottieConstants.IterateForever)
+        LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever)
     }
 
 }
-@Preview (showBackground = true)
+
+@Preview(showBackground = true)
 @Composable
 fun LottieSplashScreen() {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_lottie_splash))
-        LottieAnimation(composition = composition,  iterations = LottieConstants.IterateForever)
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 
 }

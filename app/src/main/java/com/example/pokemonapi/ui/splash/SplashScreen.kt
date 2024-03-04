@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.pokemonapi.R
 import com.example.pokemonapi.commons.lottie.LottieSplashScreen
@@ -19,7 +20,7 @@ import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ScaffoldSplashScreen(navController: NavController)
+fun SplashScreen(navController: NavController)
 {
     Scaffold(
         content = { ContentSplashScreen(navController = navController ) }
@@ -27,14 +28,15 @@ fun ScaffoldSplashScreen(navController: NavController)
 }
 
 
+@Preview
 @Composable
-fun ContentSplashScreen(navController: NavController) {
+fun ContentSplashScreen(navController: NavController?=null) {
     SetStatusBarColor(color = colorResource(id = R.color.color_fondo_splash))
     LaunchedEffect(key1 = true)
     {
-        delay(3000)
-        navController.popBackStack()
-        navController.navigate(AppScreen.LoginScreen.route)
+        delay(1000)
+        navController?.popBackStack()
+        navController?.navigate(AppScreen.LoginScreen.route)
     }
 
     Column(modifier = Modifier

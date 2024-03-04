@@ -1,8 +1,10 @@
 package com.example.pokemonapi.data.interceptor
 
 import android.os.Build
+import com.example.pokemonapi.commons.gson.BeanMapper
 import okhttp3.Interceptor
 import okhttp3.Response
+import timber.log.Timber
 import javax.inject.Inject
 
 class HeaderInterceptor @Inject constructor() : Interceptor {

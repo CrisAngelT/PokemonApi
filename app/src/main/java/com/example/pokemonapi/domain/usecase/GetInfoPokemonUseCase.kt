@@ -1,10 +1,21 @@
 package com.example.pokemonapi.domain.usecase
 
-import com.example.pokemonapi.data.ListPokemonRepository
+import com.example.pokemonapi.commons.Resource
+import com.example.pokemonapi.data.model.response.PokemonInfoResponse
+import com.example.pokemonapi.data.repository.PokemonRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetInfoPokemonUseCase @Inject constructor(private val repository: ListPokemonRepository) {
+class GetInfoPokemonUseCase @Inject constructor(private val repository: PokemonRepository) {
 
-    suspend operator fun invoke(id: Int): com.example.pokemonapi.data.model.response.Pokemon? = repository.getInfoPokemon(id)
+    operator fun invoke(id: Int) = flow {
+        emit(Resource.Loading())
+        emit(Resource.Success(repository.getInfoPokemon(id)))
+    }.catch {
+        emit(Resource.DataError(it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
 }

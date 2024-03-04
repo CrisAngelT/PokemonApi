@@ -4,12 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pokemonapi.domain.bean.Pokemon
 import com.example.pokemonapi.ui.detailpokemon.DetailPokemonViewModel
-import com.example.pokemonapi.ui.main.component.MainPokemonComponent
-import com.example.pokemonapi.ui.splash.ScaffoldSplashScreen
-import com.example.pokemonapi.ui.detailpokemon.detailPokemonComponent
-import com.example.pokemonapi.ui.login.LoginPage
+import com.example.pokemonapi.ui.main.screen.MainScreen
+import com.example.pokemonapi.ui.splash.SplashScreen
+import com.example.pokemonapi.ui.detailpokemon.DetailPokemonScreen
+import com.example.pokemonapi.ui.start.StartScreen
 import com.example.pokemonapi.ui.main.MainViewModel
 
 
@@ -20,19 +19,19 @@ fun AppNavigation(mainViewModel: MainViewModel, detailViewModel: DetailPokemonVi
     {
         composable(route = AppScreen.SplashScreen.route)
         {
-            ScaffoldSplashScreen(navController)
+            SplashScreen(navController)
         }
         composable(route = AppScreen.LoginScreen.route)
         {
-            LoginPage(navController)
+            StartScreen(navController)
         }
         composable(route = AppScreen.MainScreen.route)
         {
-            MainPokemonComponent(mainViewModel,navController)
+            MainScreen(mainViewModel,navController)
         }
         composable(route = AppScreen.DetailScreen.route)
         {
-            detailPokemonComponent(navController,detailViewModel)
+            DetailPokemonScreen(navController,detailViewModel)
         }
     }
 }

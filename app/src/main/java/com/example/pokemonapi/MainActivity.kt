@@ -32,6 +32,8 @@ class MainActivity : ComponentActivity() {
                     AppNavigation(pokemonViewModel,detailViewModel)
                 }
             }
+
+
         }
     }
 
