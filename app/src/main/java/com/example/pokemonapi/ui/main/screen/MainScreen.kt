@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -60,13 +60,10 @@ import com.example.pokemonapi.ui.main.state.MainState
 fun MainScreen(navController: NavController) {
     val mainMapViewModel: MainViewModel = hiltViewModel()
     val listPokemon = mainMapViewModel.pokemonList.value
-    val query = mainMapViewModel.query.collectAsState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBarMainScreen(query.value) { query ->
-                mainMapViewModel.setQuery(query)
-            }
+            TopAppBarMainScreen(mainMapViewModel)
 
         },
         containerColor = Color.Black,
@@ -104,27 +101,24 @@ fun RecyclerViewList(
         modifier = Modifier.padding(paddingValues),
         columns = GridCells.Fixed(2),
         content = {
-            itemsIndexed(listPokemon)
-            { count, pokemonBean ->
-                ItemPokemon(count, pokemonBean, navController)
+            items(listPokemon){
+                    pokemonBean ->
+                ItemPokemon(pokemonBean, navController)
 
             }
+
 
         }
     )
 
 }
 
-@Preview(showSystemUi = true)
+
 @Composable
 private fun ItemPokemon(
-    index: Int = 2,
-    user: ResultPokemonBean = ResultPokemonBean(),
+    pokemonBean: ResultPokemonBean = ResultPokemonBean(),
     navController: NavController? = null
 ) {
-    val idPokemon = index + 1
-
-
     Card(
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
@@ -135,7 +129,7 @@ private fun ItemPokemon(
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
-                navController?.navigate(DetailAppScreen(idPokemon.toString()))
+                navController?.navigate(DetailAppScreen(pokemonBean.idPokemon.toString()))
             },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
@@ -150,11 +144,11 @@ private fun ItemPokemon(
                     .fillMaxWidth()
                     .height(130.dp),
                 alignment = Alignment.Center,
-                model = getPokemonImage(idPokemon.toString()),
+                model = getPokemonImage(pokemonBean.idPokemon.toString()),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 loading = {
-                    CircularProgress(idPokemon)
+                    CircularProgress(pokemonBean.idPokemon)
                 }
             )
 
@@ -165,7 +159,7 @@ private fun ItemPokemon(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextView(replaceWithChar(user.name), 18, R.color.white, true)
+                TextView(replaceWithChar(pokemonBean.name), 18, R.color.white, true)
                 Image(
                     painter = painterResource(id = R.drawable.logopokebola),
                     contentDescription = null,
@@ -178,7 +172,8 @@ private fun ItemPokemon(
 
 @Preview
 @Composable
-fun TopAppBarMainScreen(value: String = "Search here", onClick: ((String) -> Unit)? = null) {
+fun TopAppBarMainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+    val query = mainViewModel.query.collectAsState()
 
     Column(
         modifier = Modifier
@@ -204,9 +199,9 @@ fun TopAppBarMainScreen(value: String = "Search here", onClick: ((String) -> Uni
             TextField(
                 modifier = Modifier
                     .weight(4f),
-                value = value,
+                value = query.value,
                 onValueChange = {
-                    onClick?.invoke(it)
+                    mainViewModel.setQuery(it)
                 },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,

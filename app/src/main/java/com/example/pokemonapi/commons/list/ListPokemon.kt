@@ -6,9 +6,9 @@ object ListPokemon {
 
 
     val listPreviewPokemon = mutableListOf(
-        ResultPokemonBean("Bulbasor", "https://pokeapi.co/api/v2/pokemon/1/"),
-        ResultPokemonBean("Ivasur", "https://pokeapi.co/api/v2/pokemon/1/"),
-        ResultPokemonBean("Pikachu", "https://pokeapi.co/api/v2/pokemon/1/"),
-        ResultPokemonBean("Makanaky", "https://pokeapi.co/api/v2/pokemon/1/"),
+        ResultPokemonBean(1,"Bulbasor", "https://pokeapi.co/api/v2/pokemon/1/"),
+        ResultPokemonBean(2,"Ivasur", "https://pokeapi.co/api/v2/pokemon/1/"),
+        ResultPokemonBean(3,"Pikachu", "https://pokeapi.co/api/v2/pokemon/1/"),
+        ResultPokemonBean(4,"Makanaky", "https://pokeapi.co/api/v2/pokemon/1/"),
     )
 }

@@ -41,19 +41,17 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.example.pokemonapi.R
 import com.example.pokemonapi.commons.colors.ColorPokemonTypeMap
-import com.example.pokemonapi.commons.constants.Constants.Companion.DETAIL_POKEMON_OBJECT
 import com.example.pokemonapi.commons.link.getPokemonImage
 import com.example.pokemonapi.commons.lottie.LottieLogoLogin
 import com.example.pokemonapi.commons.navigation.DetailAppScreen
 import com.example.pokemonapi.commons.player.UtilMediaPlayer
-import com.example.pokemonapi.commons.preference.Preference
 import com.example.pokemonapi.commons.screens.SliderMinimalExample
 import com.example.pokemonapi.commons.screens.SpacerViewWithHeight
 import com.example.pokemonapi.commons.screens.TextView
 import com.example.pokemonapi.commons.util.dividerHeightAndWithPokemon
 import com.example.pokemonapi.commons.util.dividerWithStats
 import com.example.pokemonapi.commons.util.replaceWithChar
-import com.example.pokemonapi.data.model.response.PokemonInfoResponse
+import com.example.pokemonapi.domain.bean.DetailPokemonBean
 import com.example.pokemonapi.ui.detailpokemon.state.DetailState
 import timber.log.Timber
 
@@ -93,18 +91,17 @@ fun DetailPokemonContent(response: DetailState, idPokemon: Int) {
 @Composable
 fun DataPokemon(
     idPokemon: Int = 2,
-    response: PokemonInfoResponse? = null,
+    response: DetailPokemonBean? = null,
     navController: NavController? = null
 ) {
     Timber.e("POKEMON RESPONSE  --> $response")
-    val totalCP = response?.stats?.sumOf { it.baseStat } ?: 0
-    val typePokemon = response?.types?.firstOrNull()?.type?.name ?: "unknown"
+    val typePokemon = response?.types?.firstOrNull()?: "unknown"
     val context  = LocalContext.current
     UtilMediaPlayer().play()
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopAppBar(totalCP, navController) },
+        topBar = { TopAppBar(response?.totalCp?:0, navController) },
         containerColor = Color.Black
     ) { paddingValues ->
         Column(
@@ -138,14 +135,14 @@ fun DataPokemon(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextView(
-                    replaceWithChar(response?.name?:"Makanaky"),
+                    response?.namePokemon?:"Bulbasaur",
                     40,
                     R.color.white,
                     true,
                 )
                 Icon(painter = painterResource(id = R.drawable.svg_sound), contentDescription = null,
                     tint = Color.White, modifier = Modifier.padding(start = 5.dp).size(30.dp).clickable {
-                        UtilMediaPlayer().playAudioFromUrl(response?.cries?.latest.orEmpty(),context)
+                        UtilMediaPlayer().playAudioFromUrl(response?.soundPokemon.orEmpty(),context)
                     })
 
 
@@ -158,22 +155,20 @@ fun DataPokemon(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally)
             ) {
-                response?.types?.forEach { data ->
-
+                response?.types?.forEach {  name ->
                     OutlinedButton(
                         onClick = { },
                         modifier = Modifier.width(100.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
                         ),
-                        border = BorderStroke(2.dp,color = ColorPokemonTypeMap[data.type.name] ?: Color.Yellow)
+                        border = BorderStroke(2.dp,color = ColorPokemonTypeMap[name] ?: Color.Yellow)
                     ) {
                         TextView(
-                            replaceWithChar(data.type.name),
+                            replaceWithChar(name),
                             14, R.color.white
                         )
                     }
-
                 }
 
             }
@@ -257,7 +252,7 @@ fun DataPokemon(
                                 replaceWithChar(data.stat.name),
                                 14, R.color.white,
                                 true,
-                                modifier = Modifier.width(130.dp)
+                                Modifier.width(130.dp)
                             )
                             TextView(
                                 data.baseStat.toString().replaceFirstChar { it.uppercase() },
@@ -279,7 +274,7 @@ fun DataPokemon(
 
 }
 
-@Preview(showSystemUi = true, showBackground = true, uiMode = 1)
+@Preview(showSystemUi = true, showBackground = true, uiMode = 0)
 @Composable
 fun TopAppBar(totalCP: Int = 2, navController: NavController? = null) {
     Column(modifier = Modifier.padding(top = 30.dp, start = 15.dp, end = 15.dp)) {

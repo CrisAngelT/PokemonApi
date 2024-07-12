@@ -27,15 +27,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailPokemonViewModel @Inject constructor(
-    private val getInfoPokemonUseCase: GetInfoPokemonUseCase,
-    @ApplicationContext context: Context
+    private val getInfoPokemonUseCase: GetInfoPokemonUseCase
 ) :
     ViewModel() {
 
     private val _detailPokemon = mutableStateOf(DetailState())
     val detailPokemon: State<DetailState> get() = _detailPokemon
-
-
 
 
     @SuppressLint("SuspiciousIndentation")
@@ -47,7 +44,10 @@ class DetailPokemonViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    _detailPokemon.value = DetailState(data = resource.data)
+                    resource.data?.collect { response ->
+                        _detailPokemon.value = DetailState(data = response)
+
+                    }
                 }
 
                 is Resource.DataError -> {

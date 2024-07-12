@@ -1,9 +1,9 @@
 package com.example.pokemonapi.ui.detailpokemon.state
 
-import com.example.pokemonapi.data.model.response.PokemonInfoResponse
+import com.example.pokemonapi.domain.bean.DetailPokemonBean
 
 data class DetailState(
     val isLoading: Boolean = false,
-    val data: PokemonInfoResponse? = null,
+    val data: DetailPokemonBean? = null,
     val error: String = ""
 )

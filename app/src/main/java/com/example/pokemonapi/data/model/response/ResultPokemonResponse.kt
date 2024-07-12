@@ -1,17 +1,9 @@
 package com.example.pokemonapi.data.model.response
 
-import com.example.pokemonapi.domain.bean.ResultPokemonBean
 import com.google.gson.annotations.SerializedName
 
 data class ResultPokemonResponse(
+    val idPokemon: Int = 0,
     @SerializedName("name") val name: String,
     @SerializedName("url") val url: String
-) : java.io.Serializable {
-
-
-    fun toBean(): ResultPokemonBean {
-        val bean = this
-        return ResultPokemonBean(name = bean.name, url = bean.url)
-
-    }
-}
+)

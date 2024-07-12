@@ -1,8 +1,7 @@
 package com.example.pokemonapi.domain.usecase
 
 import com.example.pokemonapi.commons.Resource
-import com.example.pokemonapi.data.model.response.PokemonInfoResponse
-import com.example.pokemonapi.data.repository.PokemonRepository
+import com.example.pokemonapi.domain.repository.PokemonRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

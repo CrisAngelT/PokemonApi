@@ -1,6 +1,6 @@
 package com.example.pokemonapi.di
 
-import com.example.pokemonapi.commons.constants.Constants.Companion.URL_PRINCIPAL
+import com.example.pokemonapi.commons.constants.Constants.URL_PRINCIPAL
 import com.example.pokemonapi.data.interceptor.HeaderInterceptor
 import com.example.pokemonapi.data.network.PokemonApi
 import dagger.Module
@@ -22,8 +22,9 @@ object NetworkModule {
     fun provideOkHttpClient(
         interceptor: HeaderInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
-        .callTimeout(TIME_OUT, TimeUnit.MINUTES)
-        .connectTimeout(TIME_OUT, TimeUnit.MINUTES)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
         .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .addInterceptor(interceptor)
         .build()
@@ -43,4 +44,3 @@ object NetworkModule {
         return retrofit.create(PokemonApi::class.java)
     }
 }
-private const val TIME_OUT = 1L
