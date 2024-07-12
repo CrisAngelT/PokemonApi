@@ -1,11 +1,13 @@
 package com.example.pokemonapi.commons.utilcomponent
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,8 +35,11 @@ fun LogoPokemon(width: Dp,height:Dp) {
     {
         Column(
             modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 30.dp)
                 .fillMaxWidth()
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .background(Color.Transparent)
+              ,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

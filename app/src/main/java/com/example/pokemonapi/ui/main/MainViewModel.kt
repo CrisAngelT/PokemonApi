@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(private val getPokemonUseCase: GetPokemo
 
                     is Resource.DataError -> {
                         _pokemonList.value =
-                            MainState(error(resource.errorMessageOrCode.toString()))
+                            MainState(error  = resource.errorMessageOrCode.toString())
 
                     }
 

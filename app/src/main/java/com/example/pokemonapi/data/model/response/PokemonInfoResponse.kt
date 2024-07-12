@@ -14,6 +14,7 @@ data class PokemonInfoResponse(
     @Expose @SerializedName("weight") val weight: Int,
     @Expose @SerializedName("sprites") val sprites: Sprites,
     @Expose @SerializedName("abilities") val abilities: List<Ability>,
+    @Expose @SerializedName("cries") val cries: CriesResponse,
     @Expose @SerializedName("forms") val forms: List<Form>,
     @Expose @SerializedName("game_indices") val gameIndices: List<GameIndex>,
     @Expose @SerializedName("held_items") val heldItems: List<HeldItem>,
@@ -24,6 +25,11 @@ data class PokemonInfoResponse(
     @Expose @SerializedName("types") val types: List<Type>,
     @Expose @SerializedName("flavor_text_entries") val flavorTextEntries: List<FlavorTextEntry>,
     var spanishFlavorTextEntries: List<String> = emptyList()
+)
+
+data class CriesResponse(
+    @Expose @SerializedName("latest") val latest: String,
+    @Expose @SerializedName("legacy") val legacy: String
 )
 
 data class FlavorTextEntry(
@@ -49,9 +55,11 @@ data class Sprites(
     @Expose @SerializedName("versions") val versions: Versions?
 
 )
+
 data class Other(
     @Expose @SerializedName("dream_world") val dreamWorld: DreamWorld,
 )
+
 data class DreamWorld(
     @Expose @SerializedName("front_default") val frontDefault: String?,
 )

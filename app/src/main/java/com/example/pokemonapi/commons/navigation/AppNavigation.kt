@@ -4,34 +4,29 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pokemonapi.ui.detailpokemon.DetailPokemonViewModel
+import androidx.navigation.toRoute
 import com.example.pokemonapi.ui.main.screen.MainScreen
-import com.example.pokemonapi.ui.splash.SplashScreen
 import com.example.pokemonapi.ui.detailpokemon.DetailPokemonScreen
 import com.example.pokemonapi.ui.start.StartScreen
-import com.example.pokemonapi.ui.main.MainViewModel
 
 
 @Composable
-fun AppNavigation(mainViewModel: MainViewModel, detailViewModel: DetailPokemonViewModel) {
+fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreen.SplashScreen.route)
+    NavHost(navController = navController, startDestination = StarAppScreen)
     {
-        composable(route = AppScreen.SplashScreen.route)
-        {
-            SplashScreen(navController)
-        }
-        composable(route = AppScreen.LoginScreen.route)
-        {
+        composable<StarAppScreen>{
             StartScreen(navController)
         }
-        composable(route = AppScreen.MainScreen.route)
-        {
-            MainScreen(mainViewModel,navController)
+        composable<MainAppScreen>{
+            MainScreen(navController)
+
         }
-        composable(route = AppScreen.DetailScreen.route)
-        {
-            DetailPokemonScreen(navController,detailViewModel)
+        composable<DetailAppScreen>{backStackEntry ->
+            val idPokemon = backStackEntry.toRoute<DetailAppScreen>()
+            DetailPokemonScreen(navController,idPokemon)
+
         }
+
     }
 }

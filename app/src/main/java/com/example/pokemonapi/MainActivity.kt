@@ -1,19 +1,12 @@
 package com.example.pokemonapi
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pokemonapi.ui.main.MainViewModel
+import androidx.activity.enableEdgeToEdge
 import com.example.pokemonapi.commons.navigation.AppNavigation
-import com.example.pokemonapi.domain.bean.ResultPokemonBean
-import com.example.pokemonapi.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pokemonapi.ui.theme.PokemonApiTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,16 +14,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.WHITE) // light causes internally enforce the navigation bar to be fully transparent
+        )
+
         setContent {
             PokemonApiTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    val pokemonViewModel: MainViewModel = viewModel()
-                    val detailViewModel:DetailPokemonViewModel = viewModel()
-                    AppNavigation(pokemonViewModel,detailViewModel)
-                }
+                AppNavigation()
             }
 
 
