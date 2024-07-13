@@ -1,5 +1,6 @@
 package com.example.pokemonapi.domain.mapper
 
+import com.example.pokemonapi.data.local.entity.PokemonListEntity
 import com.example.pokemonapi.data.model.response.PokemonInfoResponse
 import com.example.pokemonapi.data.model.response.PokemonResponse
 import com.example.pokemonapi.data.model.response.ResultPokemonResponse
@@ -21,10 +22,27 @@ fun ResultPokemonResponse.toDomain(id: Int): ResultPokemonBean {
 fun PokemonResponse.toDomain(): PokemonBean {
     return PokemonBean(
         resultsListPokemonBean = this.results.mapIndexed { index, result ->
-            result.toDomain(index + 1) // Incrementamos el ID empezando en 1
+            result.toDomain(index + 1)
         }
     )
 }
+fun ResultPokemonBean.toEntityDomain():PokemonListEntity{
+    return PokemonListEntity(
+        idPokemon = this.idPokemon,
+        name = this.name,
+        url = this.url
+    )
+}
+fun PokemonListEntity.toBeanDomain():ResultPokemonBean{
+    return ResultPokemonBean(
+        idPokemon = this.idPokemon,
+        name = this.name,
+        url = this.url
+    )
+}
+
+
+
 
 fun PokemonInfoResponse.toDomain():DetailPokemonBean{
     return DetailPokemonBean(

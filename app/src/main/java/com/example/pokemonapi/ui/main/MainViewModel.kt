@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokemonapi.commons.Resource
+import com.example.pokemonapi.commons.gson.BeanMapper
 import com.example.pokemonapi.domain.usecase.GetPokemonUseCase
 import com.example.pokemonapi.ui.main.state.MainState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,21 +59,14 @@ class MainViewModel @Inject constructor(private val getPokemonUseCase: GetPokemo
 
                     is Resource.Success -> {
                         resource.data?.collect{ response ->
-                            Timber.e("POKEMON RESPONSE  --> ${_query.value}")
                             if (_query.value.isNotBlank()) {
-                                val responseFilter = MainState(data = response.resultsListPokemonBean?.filter {
-                                        filter -> filter.name.contains(_query.value,ignoreCase = true)
+                                _pokemonList.value = MainState(data = response.filter { filter -> filter.name.contains(_query.value,ignoreCase = true)
                                 })
-                                Timber.e("POKEMON RESPONSE  --> ${responseFilter.data}")
-
-                                _pokemonList.value = MainState(data = response.resultsListPokemonBean?.filter {
-                                        filter -> filter.name.contains(_query.value,ignoreCase = true)
-                                })
-
 
                             } else {
+                                Timber.e("ADD POKEMON -->${BeanMapper.toJson(response)}")
                                 _pokemonList.value =
-                                    MainState(data = response.resultsListPokemonBean)
+                                    MainState(data = response)
                             }
                         }
 

@@ -2,7 +2,7 @@ package com.example.pokemonapi.di
 
 import com.example.pokemonapi.commons.constants.Constants.URL_PRINCIPAL
 import com.example.pokemonapi.data.interceptor.HeaderInterceptor
-import com.example.pokemonapi.data.network.PokemonApi
+import com.example.pokemonapi.data.remote.PokemonApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

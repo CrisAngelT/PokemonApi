@@ -1,4 +1,4 @@
-package com.example.pokemonapi.data.network
+package com.example.pokemonapi.data.remote
 
 import com.example.pokemonapi.data.model.response.PokemonResponse
 import com.example.pokemonapi.data.model.response.PokemonInfoResponse
