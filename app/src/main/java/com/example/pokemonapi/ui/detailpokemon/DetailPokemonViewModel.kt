@@ -1,58 +1,120 @@
 package com.example.pokemonapi.ui.detailpokemon
 
 import android.annotation.SuppressLint
-import android.content.Context
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokemonapi.commons.Resource
-import com.example.pokemonapi.commons.constants.Constants
-import com.example.pokemonapi.commons.preference.Preference
-import com.example.pokemonapi.data.model.response.PokemonInfoResponse
+import com.example.pokemonapi.commons.gson.BeanMapper
 import com.example.pokemonapi.domain.usecase.GetInfoPokemonUseCase
+import com.example.pokemonapi.domain.usecase.GetMovePokemonUseCase
+import com.example.pokemonapi.domain.usecase.GetPokemonEvolutionUseCase
+import com.example.pokemonapi.domain.usecase.GetSpeciesPokemonUseCase
 import com.example.pokemonapi.ui.detailpokemon.state.DetailState
-import com.example.pokemonapi.ui.main.state.MainState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
 @HiltViewModel
 class DetailPokemonViewModel @Inject constructor(
-    private val getInfoPokemonUseCase: GetInfoPokemonUseCase
-) :
-    ViewModel() {
+    private val getInfoPokemonUseCase: GetInfoPokemonUseCase,
+    private val getPokemonEvolutionUseCase: GetPokemonEvolutionUseCase,
+    private val getSpeciesPokemonUseCase: GetSpeciesPokemonUseCase,
+    private val getMovePokemonUseCase: GetMovePokemonUseCase
+): ViewModel() {
+    var state by mutableStateOf(DetailState())
+        private set
+    private val _indexFeaturesPokemon = mutableIntStateOf(0)
+     val indexFeaturesPokemon:State<Int> get() = _indexFeaturesPokemon
 
-    private val _detailPokemon = mutableStateOf(DetailState())
-    val detailPokemon: State<DetailState> get() = _detailPokemon
-
+    fun indexIncrementalFeaturePokemon() = viewModelScope.launch {
+        _indexFeaturesPokemon.intValue += 1
+    }
+    fun indexDecrementalFeaturePokemon() = viewModelScope.launch {
+        _indexFeaturesPokemon.intValue -= 1
+    }
 
     @SuppressLint("SuspiciousIndentation")
     fun getInfoPokemon(id: Int) = viewModelScope.launch {
         getInfoPokemonUseCase(id).onEach { resource ->
             when (resource) {
                 is Resource.Loading -> {
-                    _detailPokemon.value = DetailState(isLoading = true)
+                    state = state.copy(isLoading = true)
                 }
 
                 is Resource.Success -> {
                     resource.data?.collect { response ->
-                        _detailPokemon.value = DetailState(data = response)
+                        state = state.copy(isLoading = false, data = response)
 
                     }
                 }
 
                 is Resource.DataError -> {
-                    _detailPokemon.value =
-                        DetailState(error = resource.errorMessageOrCode.toString())
+                    state = state.copy(isLoading = false,error = resource.errorMessageOrCode.toString())
+
+
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    fun getEvolutionPokemonById(id: Int) = viewModelScope.launch {
+        getPokemonEvolutionUseCase(id).onEach { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    state = state.copy(isLoading = true)
+                }
+
+                is Resource.Success -> {
+                    resource.data?.collect { response ->
+                        state = state.copy(isLoading = false,evolutionResponse = response)
+                    }
+                }
+
+                is Resource.DataError -> {
+                    state = state.copy(isLoading = false,error = resource.errorMessageOrCode.toString())
+
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    fun getSpeciesPokemonByName(name: String) =
+        viewModelScope.launch {
+        getSpeciesPokemonUseCase(name).onEach { resource ->
+            resource.collect{
+                state = state.copy(isLoading = false,speciesResponse = it)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    fun getMovePokemonById(id: Int) = viewModelScope.launch {
+        getMovePokemonUseCase(id).onEach { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    state = state.copy(isLoading = true)
+                }
+
+                is Resource.Success -> {
+                    resource.data?.collect { response ->
+                        Timber.e("getMovePokemonById: ${BeanMapper.toJson(response)}")
+                        state = state.copy(isLoading = false, moveResponse = response)
+                    }
+                }
+
+                is Resource.DataError -> {
+                    state = state.copy(isLoading = false,error = resource.errorMessageOrCode.toString())
 
                 }
             }

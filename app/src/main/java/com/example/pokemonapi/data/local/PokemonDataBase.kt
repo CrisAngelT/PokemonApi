@@ -2,6 +2,7 @@ package com.example.pokemonapi.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.pokemonapi.data.local.dao.DetailPokemonDao
 import com.example.pokemonapi.data.local.dao.PokemonListDao
 import com.example.pokemonapi.data.local.entity.PokemonListEntity
 

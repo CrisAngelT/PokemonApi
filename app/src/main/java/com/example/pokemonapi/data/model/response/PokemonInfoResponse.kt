@@ -58,10 +58,22 @@ data class Sprites(
 
 data class Other(
     @Expose @SerializedName("dream_world") val dreamWorld: DreamWorld,
+    @Expose @SerializedName("showdown") val showdown: ShowDownResponse,
 )
 
 data class DreamWorld(
     @Expose @SerializedName("front_default") val frontDefault: String?,
+)
+
+data class ShowDownResponse(
+    @Expose @SerializedName("back_default") val backDefault: String?,
+    @Expose @SerializedName("back_female") val backFemale: String?,
+    @Expose @SerializedName("back_shiny") val backShiny: String?,
+    @Expose @SerializedName("back_shiny_female") val backShinyFemale: String?,
+    @Expose @SerializedName("front_default") val frontDefault: String?,
+    @Expose @SerializedName("front_female") val frontFemale: String?,
+    @Expose @SerializedName("front_shiny") val frontShiny: String?,
+    @Expose @SerializedName("front_shiny_female") val frontShinyFemale: String?,
 )
 
 data class Versions(

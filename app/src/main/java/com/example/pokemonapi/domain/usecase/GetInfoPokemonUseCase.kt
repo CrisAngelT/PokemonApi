@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class GetInfoPokemonUseCase @Inject constructor(private val repository: PokemonRepository) {
-
     operator fun invoke(id: Int) = flow {
         emit(Resource.Loading())
         emit(Resource.Success(repository.getInfoPokemon(id)))

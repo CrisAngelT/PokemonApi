@@ -14,3 +14,5 @@ fun getErrorList() =
 
 fun getMissingNumber() =
     "https://static.wikia.nocookie.net/omniversal-battlefield/images/d/d8/MissingNo..png/revision/latest/scale-to-width-down/400?cb=20180813031906"
+
+fun getSvgPokemonImage(i:String)= "https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${i}.svg"

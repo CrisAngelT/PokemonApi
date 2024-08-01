@@ -45,6 +45,18 @@ fun PokemonListEntity.toBeanDomain():ResultPokemonBean{
 
 
 fun PokemonInfoResponse.toDomain():DetailPokemonBean{
+
+    val listSprites = listOfNotNull(
+        this.sprites.other?.showdown?.backDefault,
+        this.sprites.other?.showdown?.backFemale,
+        this.sprites.other?.showdown?.backShiny,
+        this.sprites.other?.showdown?.backShinyFemale,
+        this.sprites.other?.showdown?.frontDefault,
+        this.sprites.other?.showdown?.frontFemale,
+        this.sprites.other?.showdown?.frontShiny,
+        this.sprites.other?.showdown?.frontShinyFemale
+    )
+
     return DetailPokemonBean(
         totalCp = this.stats.sumOf { it.baseStat },
         namePokemon = this.name.replaceFirstChar { it.uppercase()},
@@ -53,7 +65,8 @@ fun PokemonInfoResponse.toDomain():DetailPokemonBean{
         typePokemon = this.types.map { it.type.name },
         soundPokemon = this.cries.latest,
         types = this.types.map { it.type.name },
-        stats = this.stats.map { it.toDomain() }
+        stats = this.stats.map { it.toDomain() },
+        sprites = listSprites
     )
 }
 

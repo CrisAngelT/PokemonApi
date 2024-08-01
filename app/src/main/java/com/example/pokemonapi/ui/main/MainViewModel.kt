@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
@@ -28,7 +29,9 @@ class MainViewModel @Inject constructor(private val getPokemonUseCase: GetPokemo
     private val _pokemonList = mutableStateOf(MainState())
     val pokemonList: State<MainState> get() = _pokemonList
     private val _query: MutableStateFlow<String> = MutableStateFlow("")
-    val query: StateFlow<String> get() = _query
+    val query = _query.asStateFlow()
+    private val _isInternetAvailable =  mutableStateOf(false)
+    val isInternetAvailable: State<Boolean> get() = _isInternetAvailable
     init {
         viewModelScope.launch {
             _query.debounce(100).collectLatest {
@@ -41,7 +44,12 @@ class MainViewModel @Inject constructor(private val getPokemonUseCase: GetPokemo
     fun setQuery(s: String) {
         _query.value = s
     }
-
+    fun validationInternet(){
+        _isInternetAvailable.value = true
+    }
+    fun clearValidationInternet(){
+        _isInternetAvailable.value = false
+    }
     @SuppressLint("SuspiciousIndentation")
     fun getPokemonList() =
         viewModelScope.launch {

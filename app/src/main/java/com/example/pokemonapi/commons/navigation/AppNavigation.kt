@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.pokemonapi.ui.main.screen.MainScreen
 import com.example.pokemonapi.ui.detailpokemon.DetailPokemonScreen
+import com.example.pokemonapi.ui.map.MapScreen
 import com.example.pokemonapi.ui.start.StartScreen
 
 
@@ -23,10 +24,11 @@ fun AppNavigation() {
 
         }
         composable<DetailAppScreen>{backStackEntry ->
-            val idPokemon = backStackEntry.toRoute<DetailAppScreen>()
-            DetailPokemonScreen(navController,idPokemon)
+            val idWithNamePokemon = backStackEntry.toRoute<DetailAppScreen>()
+            DetailPokemonScreen(navController,idWithNamePokemon)
 
         }
+
 
     }
 }

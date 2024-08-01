@@ -1,8 +1,11 @@
 package com.example.pokemonapi.ui.main.screen
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,10 +34,15 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,31 +53,148 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.example.pokemonapi.R
 import com.example.pokemonapi.commons.colors.ColorTextFieldContainerDefault
+import com.example.pokemonapi.commons.features.IndexPokemon.HOME
 import com.example.pokemonapi.commons.link.getPokemonImage
 import com.example.pokemonapi.commons.list.ListPokemon.listPreviewPokemon
-import com.example.pokemonapi.commons.lottie.LottieLogoLogin
+import com.example.pokemonapi.commons.lottie.LottieComposable
 import com.example.pokemonapi.commons.navigation.DetailAppScreen
+import com.example.pokemonapi.commons.screens.AlertDialogPokemon
 import com.example.pokemonapi.commons.screens.CircularProgress
 import com.example.pokemonapi.commons.screens.TextView
+import com.example.pokemonapi.commons.util.NavigationBarItems
+import com.example.pokemonapi.commons.util.isInternetAvailable
 import com.example.pokemonapi.commons.util.replaceWithChar
 import com.example.pokemonapi.commons.utilcomponent.LogoPokemon
 import com.example.pokemonapi.domain.bean.ResultPokemonBean
 import com.example.pokemonapi.ui.main.MainViewModel
-import com.example.pokemonapi.ui.main.state.MainState
+import com.example.pokemonapi.ui.map.MapScreen
+import com.exyte.animatednavbar.AnimatedNavigationBar
+import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
+import com.exyte.animatednavbar.animation.indendshape.Height
+import com.exyte.animatednavbar.utils.noRippleClickable
 
 @Composable
 fun MainScreen(navController: NavController) {
     val mainMapViewModel: MainViewModel = hiltViewModel()
     val listPokemon = mainMapViewModel.pokemonList.value
+    val query = mainMapViewModel.query.collectAsState()
+    if (listPokemon.isLoading) {
+        LottieComposable(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        )
+
+    }
+    val isInternetAvailable = mainMapViewModel.isInternetAvailable
+
+    if (isInternetAvailable.value) {
+        AlertDialogPokemon(
+            isInternetAvailable.value,
+            "Active su conexión a internet",
+            onConfirmClick = {
+                mainMapViewModel.clearValidationInternet()
+            })
+
+    }
+    MainScreenContent(query.value, navController, listPokemon.data) {
+        mainMapViewModel.setQuery(it)
+
+    }
+
+}
+
+@Preview
+@Composable
+fun MainScreenContent(
+    value: String = "",
+    navController: NavController = NavController(LocalContext.current),
+    listPokemon:
+    List<ResultPokemonBean>? = listOf(),
+    onValueChange: (String) -> Unit = {}
+) {
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val navigationBarItems = rememberSaveable { NavigationBarItems.entries.toTypedArray() }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBarMainScreen(mainMapViewModel)
+            if (selectedIndex == HOME) {
+                TopAppBarMainScreen(value) { word ->
+                    onValueChange.invoke(word)
 
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(top = 30.dp)
+                            .clickable {
+                                selectedIndex = 0
+                            },
+                        shape = RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background.copy(
+                                alpha = 0.1f
+                            ),
+                        )
+                    ) {
+                        Image(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null,
+                            modifier = Modifier.padding(start = 15.dp, top = 8.dp)
+                        )
+                    }
+                }
+
+            }
+
+        },
+        bottomBar = {
+            if (selectedIndex == HOME) {
+                AnimatedNavigationBar(
+                    modifier = Modifier.height(60.dp), selectedIndex = selectedIndex,
+                    ballAnimation = Parabolic(tween(300)),
+                    indentAnimation = Height(tween(300)),
+                    barColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f),
+                    ballColor = Color.Yellow
+                ) {
+                    navigationBarItems.forEach { items ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .noRippleClickable { selectedIndex = items.ordinal },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(23.dp),
+                                painter = painterResource(id = items.icon),
+                                contentDescription = null,
+                                alpha = if (selectedIndex == items.ordinal) 1f else 0.5f,
+                            )
+                            TextView(
+                                word = if (items.ordinal == 0) "Pokemon" else "Map",
+                                12, R.color.white, true, modifierAll = Modifier.padding(top = 37.dp)
+                            )
+
+
+                        }
+
+                    }
+                }
+            }
         },
         containerColor = Color.Black,
     ) { paddingValues ->
-        PokemonContent(listPokemon, navController, paddingValues)
+        if (selectedIndex == HOME) {
+            PokemonContent(listPokemon, navController, paddingValues)
+        } else {
+            MapScreen()
+        }
 
 
     }
@@ -76,15 +202,11 @@ fun MainScreen(navController: NavController) {
 
 @Composable
 fun PokemonContent(
-    listPokemon: MainState,
+    listPokemon: List<ResultPokemonBean>?,
     navController: NavController,
-    paddingValues: PaddingValues
-) {
-    if (listPokemon.isLoading) {
-        LottieLogoLogin()
+    paddingValues: PaddingValues) {
 
-    }
-    listPokemon.data?.let { data ->
+    listPokemon?.let { data ->
         RecyclerViewList(listPokemon = data, navController, paddingValues)
     }
 
@@ -101,8 +223,7 @@ fun RecyclerViewList(
         modifier = Modifier.padding(paddingValues),
         columns = GridCells.Fixed(2),
         content = {
-            items(listPokemon){
-                    pokemonBean ->
+            items(listPokemon) { pokemonBean ->
                 ItemPokemon(pokemonBean, navController)
 
             }
@@ -115,25 +236,36 @@ fun RecyclerViewList(
 
 
 @Composable
-private fun ItemPokemon(
+fun ItemPokemon(
     pokemonBean: ResultPokemonBean = ResultPokemonBean(),
     navController: NavController? = null
 ) {
+    val mainMapViewModel: MainViewModel = hiltViewModel()
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 20.dp
         ),
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
-                navController?.navigate(DetailAppScreen(pokemonBean.idPokemon.toString()))
+                if (isInternetAvailable(context)) {
+                    navController?.navigate(
+                        DetailAppScreen(
+                            pokemonBean.idPokemon.toString(),
+                            pokemonBean.name
+                        )
+                    )
+                } else {
+                    mainMapViewModel.validationInternet()
+                }
             },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
-        )
     ) {
         Column(
             modifier = Modifier
@@ -172,8 +304,7 @@ private fun ItemPokemon(
 
 @Preview
 @Composable
-fun TopAppBarMainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
-    val query = mainViewModel.query.collectAsState()
+fun TopAppBarMainScreen(value: String = "", onValueChange: (String) -> Unit = {}) {
 
     Column(
         modifier = Modifier
@@ -199,9 +330,9 @@ fun TopAppBarMainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
             TextField(
                 modifier = Modifier
                     .weight(4f),
-                value = query.value,
+                value = value,
                 onValueChange = {
-                    mainViewModel.setQuery(it)
+                    onValueChange.invoke(it)
                 },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,

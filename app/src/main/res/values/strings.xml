@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">PokemonApi</string>
     <string name="txt_hop">Saltar</string>
+    <string name="txt_power">Fuerza</string>
+    <string name="txt_accuracy">Exactitud</string>
+    <string name="txt_pp">PP</string>
+
 </resources>

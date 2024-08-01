@@ -1,6 +1,7 @@
 package com.example.pokemonapi
 
 import android.app.Application
+import com.example.pokemonapi.commons.util.isInternetAvailable
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 

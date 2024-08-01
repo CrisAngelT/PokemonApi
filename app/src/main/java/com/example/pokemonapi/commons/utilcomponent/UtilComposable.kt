@@ -35,7 +35,7 @@ fun LogoPokemon(width: Dp,height:Dp) {
     {
         Column(
             modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, top = 30.dp)
+                .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                 .fillMaxWidth()
                 .align(Alignment.Center)
                 .background(Color.Transparent)

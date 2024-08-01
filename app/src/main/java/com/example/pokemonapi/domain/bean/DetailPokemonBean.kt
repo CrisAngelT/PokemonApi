@@ -4,14 +4,15 @@ import com.example.pokemonapi.data.model.response.StatInfo
 
 
 data class DetailPokemonBean(
-    val totalCp:Int,
-    val namePokemon:String,
-    val height:Int,
-    val weight:Int,
-    val typePokemon:List<String>,
-    val soundPokemon:String,
-    val types:List<String>,
-    val stats:List<StatBean>
+    val totalCp: Int,
+    val namePokemon: String,
+    val height: Int,
+    val weight: Int,
+    val typePokemon: List<String>,
+    val soundPokemon: String,
+    val types: List<String>,
+    val stats: List<StatBean>,
+    val sprites: List<String>
 )
 
 data class StatBean(
@@ -19,3 +20,6 @@ data class StatBean(
     val effort: Int,
     val stat: StatInfo
 )
+
+
+

@@ -1,6 +1,5 @@
 package com.example.pokemonapi.ui.detailpokemon
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,24 +12,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,265 +42,330 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.example.pokemonapi.R
-import com.example.pokemonapi.commons.colors.ColorPokemonTypeMap
+import com.example.pokemonapi.commons.features.FeaturesPokemon.BASE_STATS
+import com.example.pokemonapi.commons.features.FeaturesPokemon.EVOLUTION_CHART
+import com.example.pokemonapi.commons.features.FeaturesPokemon.MOVE
 import com.example.pokemonapi.commons.link.getPokemonImage
-import com.example.pokemonapi.commons.lottie.LottieLogoLogin
+import com.example.pokemonapi.commons.lottie.LottieComposable
 import com.example.pokemonapi.commons.navigation.DetailAppScreen
 import com.example.pokemonapi.commons.player.UtilMediaPlayer
-import com.example.pokemonapi.commons.screens.SliderMinimalExample
-import com.example.pokemonapi.commons.screens.SpacerViewWithHeight
 import com.example.pokemonapi.commons.screens.TextView
-import com.example.pokemonapi.commons.util.dividerHeightAndWithPokemon
-import com.example.pokemonapi.commons.util.dividerWithStats
-import com.example.pokemonapi.commons.util.replaceWithChar
 import com.example.pokemonapi.domain.bean.DetailPokemonBean
-import com.example.pokemonapi.ui.detailpokemon.state.DetailState
-import timber.log.Timber
-
+import com.example.pokemonapi.ui.detailpokemon.features.BaseStats
+import com.example.pokemonapi.ui.detailpokemon.features.ItemEvolutionChart
+import com.example.pokemonapi.ui.detailpokemon.features.ItemSprites
+import com.example.pokemonapi.ui.detailpokemon.features.MovePokemon
 
 @Composable
 fun DetailPokemonScreen(
     navController: NavController,
-    idPokemon: DetailAppScreen,
-
-    ) {
+    dataPokemon: DetailAppScreen
+) {
     val detailViewModel: DetailPokemonViewModel = hiltViewModel()
-    val response = detailViewModel.detailPokemon.value
-
-    if (idPokemon.data.isNotEmpty()) {
-        LaunchedEffect(true)
-        {
-            detailViewModel.getInfoPokemon(idPokemon.data.toInt())
-
+    val response = detailViewModel.state
+    val incremental = detailViewModel.indexFeaturesPokemon.value
+    val idPokemonWithEvolution = detailViewModel.state.speciesResponse?.idPokemonWithEvolution ?: 0
+    when (incremental) {
+        BASE_STATS -> {
+            LaunchedEffect(true) {
+                detailViewModel.getInfoPokemon(dataPokemon.idPokemon.toInt())
+                detailViewModel.getSpeciesPokemonByName(dataPokemon.namePokemon)
+            }
         }
 
+        EVOLUTION_CHART -> {
+            LaunchedEffect(true) {
+                detailViewModel.getEvolutionPokemonById(idPokemonWithEvolution)
+
+            }
+        }
+
+        MOVE -> {
+            LaunchedEffect(true) {
+                detailViewModel.getMovePokemonById(dataPokemon.idPokemon.toInt())
+
+            }
+        }
+
+
     }
-    DetailPokemonContent(response, idPokemon.data.toInt())
 
-}
-
-
-@Composable
-fun DetailPokemonContent(response: DetailState, idPokemon: Int) {
     if (response.isLoading) {
-        LottieLogoLogin()
+        LottieComposable(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black))
     } else if (response.data != null) {
-        DataPokemon(idPokemon, response.data)
+        UtilMediaPlayer().play()
+        DataPokemon(dataPokemon.idPokemon.toInt(), response.data, navController, detailViewModel)
     }
+
 }
+
 
 @Preview
 @Composable
 fun DataPokemon(
     idPokemon: Int = 2,
     response: DetailPokemonBean? = null,
-    navController: NavController? = null
+    navController: NavController? = null,
+    detailViewModel: DetailPokemonViewModel? = null
 ) {
-    Timber.e("POKEMON RESPONSE  --> $response")
-    val typePokemon = response?.types?.firstOrNull()?: "unknown"
-    val context  = LocalContext.current
-    UtilMediaPlayer().play()
+    val indexFeatures = detailViewModel?.indexFeaturesPokemon?.value ?: 0
+    val listEvolution = detailViewModel?.state?.evolutionResponse?.listPokemon ?: listOf()
+    val move = detailViewModel?.state?.moveResponse
+    val listSprites = detailViewModel?.state?.data?.sprites ?: emptyList()
+    val context = LocalContext.current
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopAppBar(response?.totalCp?:0, navController) },
+        topBar = { TopAppBar(response, navController) },
         containerColor = Color.Black
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2), modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        )
-        {
-            SubcomposeAsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp)
-                    .padding(20.dp, 0.dp),
-                alignment = Alignment.Center,
-                model = getPokemonImage(idPokemon.toString()),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                loading = {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(130.dp)
-                    )
-                }
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextView(
-                    response?.namePokemon?:"Bulbasaur",
-                    40,
-                    R.color.white,
-                    true,
-                )
-                Icon(painter = painterResource(id = R.drawable.svg_sound), contentDescription = null,
-                    tint = Color.White, modifier = Modifier.padding(start = 5.dp).size(30.dp).clickable {
-                        UtilMediaPlayer().playAudioFromUrl(response?.soundPokemon.orEmpty(),context)
-                    })
-
-
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally)
-            ) {
-                response?.types?.forEach {  name ->
-                    OutlinedButton(
-                        onClick = { },
-                        modifier = Modifier.width(100.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
-                        ),
-                        border = BorderStroke(2.dp,color = ColorPokemonTypeMap[name] ?: Color.Yellow)
-                    ) {
-                        TextView(
-                            replaceWithChar(name),
-                            14, R.color.white
+        ) {
+            item(span = { GridItemSpan(2) }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 3.dp, end = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (indexFeatures >= 1) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
                         )
+                        {
+                            Card(
+                                onClick = { detailViewModel?.indexDecrementalFeaturePokemon() },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
+                                )
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.svg_arrow_right),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .padding(10.dp),
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                        }
                     }
-                }
 
-            }
-            SpacerViewWithHeight()
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(15.dp)) {
-                    Row(
+
+                    SubcomposeAsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Transparent),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Column {
-                            TextView(
-                                dividerHeightAndWithPokemon(response?.weight ?: 0) + "KG",
-                                20,
-                                R.color.white,
-                                true
+                            .height(250.dp)
+                            .weight(6f),
+                        model = getPokemonImage(idPokemon.toString()),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        loading = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
                             )
-                            SpacerViewWithHeight()
-                            TextView("WEIGHT", 16, R.color.white, true)
-
                         }
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            SpacerViewWithHeight()
-                            TextView("/", 20, R.color.white, true)
-
-                        }
-                        Column {
-                            TextView(
-                                dividerHeightAndWithPokemon(response?.height ?: 0) + "M",
-                                20,
-                                R.color.white,
-                                true
-                            )
-                            SpacerViewWithHeight()
-                            TextView("HEIGHT", 16, R.color.white, true)
-
-                        }
-
-
-                    }
-
-
-
-                }
-
-            }
-            SpacerViewWithHeight()
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, bottom = 30.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(15.dp)) {
-                    response?.stats?.forEach { data ->
+                    )
+                    if (indexFeatures != MOVE){
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(
-                                20.dp,
-                                Alignment.CenterHorizontally
-                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Card(
+                                onClick = { detailViewModel?.indexIncrementalFeaturePokemon() },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)
+                                )
+                            ) {
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.svg_arrow_left),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .padding(10.dp),
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                        }
+                    }
+
+
+
+                }
+            }
+            item(span = { GridItemSpan(2) }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    when (indexFeatures) {
+                        BASE_STATS -> {
                             TextView(
-                                replaceWithChar(data.stat.name),
-                                14, R.color.white,
+                                response?.namePokemon ?: "Bulbasaur",
+                                32,
+                                R.color.white,
                                 true,
-                                Modifier.width(130.dp)
                             )
-                            TextView(
-                                data.baseStat.toString().replaceFirstChar { it.uppercase() },
-                                14, R.color.white
-                            )
-                            SliderMinimalExample(typePokemon,dividerWithStats(data.baseStat))
+                            Icon(painter = painterResource(id = R.drawable.svg_sound),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .padding(start = 5.dp)
+                                    .size(30.dp)
+                                    .clickable {
+                                        UtilMediaPlayer().playAudioFromUrl(
+                                            response?.soundPokemon.orEmpty(),
+                                            context
+                                        )
+                                    })
+                        }
+
+                        EVOLUTION_CHART -> {
+                            if (listEvolution.isNotEmpty()) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 30.dp, end = 30.dp, bottom = 10.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.background.copy(
+                                            alpha = 0.1f
+                                        )
+                                    )
+                                ) {
+                                    TextView(
+                                        "Evolution chart",
+                                        30,
+                                        R.color.white,
+                                        true,
+                                        modifierAll = Modifier
+                                            .fillMaxWidth()
+                                            .padding(10.dp)
+                                    )
+                                }
+
+                            }
+
+                        }
+
+                        MOVE -> {
+                            move?.let {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 30.dp, end = 30.dp, bottom = 10.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.background.copy(
+                                            alpha = 0.1f
+                                        )
+                                    )
+                                ) {
+                                    TextView(
+                                        "Moves",
+                                        30,
+                                        R.color.white,
+                                        true,
+                                        modifierAll = Modifier
+                                            .fillMaxWidth()
+                                            .padding(10.dp)
+                                    )
+                                }
+
+                            }
 
                         }
                     }
 
-                    SpacerViewWithHeight(20)
+
+                }
+            }
+            when (indexFeatures) {
+                BASE_STATS -> {
+                    item(span = { GridItemSpan(2) }) {
+                        BaseStats(response?.types ?: listOf(), response)
+
+                    }
+                }
+
+                EVOLUTION_CHART -> {
+                    items(listEvolution) { response ->
+                        ItemEvolutionChart(response)
+                    }
+                }
+
+                MOVE -> {
+                    move?.let { moveBean ->
+                        item(span = { GridItemSpan(2) }) {
+                            MovePokemon(response?.types ?: listOf(), moveBean)
+
+                        }
+                    }
+                    items(listSprites) { sprites ->
+                        ItemSprites(sprites)
+
+                    }
 
 
                 }
-
             }
+
+
         }
+
+
     }
 
 }
 
 @Preview(showSystemUi = true, showBackground = true, uiMode = 0)
 @Composable
-fun TopAppBar(totalCP: Int = 2, navController: NavController? = null) {
-    Column(modifier = Modifier.padding(top = 30.dp, start = 15.dp, end = 15.dp)) {
+fun TopAppBar(
+    response: DetailPokemonBean? = null,
+    navController: NavController? = null
+) {
+    val totalCP = response?.totalCp ?: 0
+    Column(modifier = Modifier.padding(top = 10.dp, start = 15.dp, end = 15.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(30.dp)
-            )
-            Icon(
-                imageVector = Icons.Rounded.FavoriteBorder,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier
-                    .size(35.dp)
-                    .clickable {
-                        navController?.popBackStack()
-                    }
-            )
+            IconButton(onClick = { navController?.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
 
         }
         Spacer(modifier = Modifier.height(10.dp))
-        TextView("$totalCP CP", 40, R.color.white, true)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextView("$totalCP CP", 36, R.color.white, true)
+
+
+        }
 
     }
 }

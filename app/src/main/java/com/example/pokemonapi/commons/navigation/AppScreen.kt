@@ -3,8 +3,6 @@ package com.example.pokemonapi.commons.navigation
 import kotlinx.serialization.Serializable
 
 
-@Serializable
-object SplashAppScreen
 
 @Serializable
 object StarAppScreen
@@ -12,6 +10,6 @@ object StarAppScreen
 object MainAppScreen
 
 @Serializable
-data class DetailAppScreen(val data:String = "")
+data class DetailAppScreen(val idPokemon:String = "",val namePokemon:String = "")
 
 
