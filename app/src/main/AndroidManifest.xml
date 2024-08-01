@@ -33,7 +33,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyC5KV3mSQcgTj3pLt9X7JVo0VxHvi8KAgU" />
+            android:value="****" />
     </application>
 
 </manifest>
